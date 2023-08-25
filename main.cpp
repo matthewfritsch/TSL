@@ -7,7 +7,7 @@ struct option {
 };
 
 int main(int argc, char** argv) {
-
+    std::vector<option> options = parseArgs(argc, argv);
     
 
     return 0;
@@ -16,4 +16,7 @@ int main(int argc, char** argv) {
 std::vector<option> parseArgs(int argc, char** argv) {
     std::vector<option> options;
 
+
+
+    return options;
 }
