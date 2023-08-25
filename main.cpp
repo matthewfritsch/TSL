@@ -1,22 +1,37 @@
 #include <iostream>
 #include <vector>
 
-struct option {
-    std::string optionName;
-    bool enabled;
-};
+#include "translate.hpp"
+
+void printHelp();
 
 int main(int argc, char** argv) {
-    std::vector<option> options = parseArgs(argc, argv);
-    
+    //TODO bools for cmd flags
+    bool debug = false;
+    std::string filename;
 
-    return 0;
+    for(int i = 1; i < argc; ++i) {
+        string option(argv[i]);
+        if(option == "-h" or option == "--help") {
+            printHelp();
+            break;
+        }
+        else if(option == "-d" or option == "--debug") {
+            debug = true;
+        }
+        else {
+            filename = option;
+        }
+    }
+
+    if(not filename.length()) {
+        std::cerr << "Missing argument: filename" << std::endl;
+        return 1;
+    }
+
+    return translateAndWrite(filename, debug);
 }
 
-std::vector<option> parseArgs(int argc, char** argv) {
-    std::vector<option> options;
-
-
-
-    return options;
+void printHelp() {
+    cout << "HELP!" << endl;
 }
