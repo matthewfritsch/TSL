@@ -1,5 +1,5 @@
 fn testEcho(){
-    print("Hello world!")
+    println("Hello world!")
 }
 
 fn addOne(x: int) {
@@ -19,8 +19,48 @@ fn turtleTest() {
     t_right(4)
 }
 
+fn forLoopTest() {
+    for(i: int in range(100)) {
+        print(i + ": ")
+        if(i % 3){
+            print("fizz")
+        }
+        if(i % 5){
+            print("buzz")
+        }
+        println()
+    }
+}
+
+fn whileLoopTest() {
+    end: int = 0
+    while(end != 100){
+        print(end)
+        end += 1
+    }
+}
+
+fn unusedFuncTest() {
+    print("This should never see the light of day...")
+}
+
+fn returnVal(){
+    return 1
+}
+
+fn returnMultiple() {
+    return 1, 2, 3
+}
+
 testEcho()
 print(addOne(5))
 print(addBoth(5, 6))
 turtleTest()
+forLoopTest()
+whileLoopTest()
+unusedFuncTest()
+x = returnVal()
+print(x)
+x = returnMultiple()
+print(x)
 
