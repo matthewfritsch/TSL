@@ -14,48 +14,71 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <stack>
 
 using namespace std;
 
-struct FileResult {
+struct TranslationResult {
     int result;
+    string result_msg;
     vector<string> lines;
 };
 
-FileResult readAll(string filename) {
+struct LineInfo {
+    uint32_t lineNumber;
+    string lineText;
+};
+
+TranslationResult readAll(string filename) {
     vector<string> lines;
-    FileResult fr;
+    TranslationResult tr;
     ifstream tsl_file(filename);
     if(not tsl_file.is_open()) {
-        fr.result = ERR_FILE_ERROR;
-        return fr;
+        tr.result = ERRCODE_FILERD;
+        return tr;
     }
     string line;
     while(tsl_file) {
         std::getline(tsl_file, line);
         lines.push_back(line);
     }
-    fr.result = ERR_OK;
-    fr.lines = lines;
-    return fr;
+    tr.result = ERRCODE_OK;
+    tr.lines = lines;
+    return tr;
+}
+
+TranslationResult buildScript(vector<string> scriptLines){
+    TranslationResult tr;
+    stack<LineInfo> codeStack;
+    vector<string> translatedLines;
+    for(unsigned int lineIdx = 0; lineIdx < scriptLines.size(); ++lineIdx){
+        LineInfo li;
+        li.lineNumber = lineIdx;
+        li.lineText = scriptLines[lineIdx];
+        LineParseResult lpr = parseLine(li);
+        if(lpr.errorCode != ERRCODE_OK){
+            unwrapStack(codeStack);
+        }
+    }
+    return tr;
 }
 
 int translateAndWrite(string filename, bool debug) {
     cout << "FILENAME: " << filename << endl;
     cout << " - DEBUG = " << (debug ? "true" : "false") << endl;
 
-    FileResult fr = readAll(filename);
-    if(fr.result != ERR_OK) {
-        cerr << "File could not be read: " << fr.result << endl;
-        return fr.result;
+    TranslationResult tr = readAll(filename);
+    if(tr.result != ERRCODE_OK) {
+        cerr << "File could not be read: " << tr.result << endl;
+        return tr.result;
     }
 
     cout << endl;
-    cout << "- BEGIN CONTENTS -" << endl;
-    for(string s : fr.lines) {
-        cout << s << endl;
+
+    tr = buildScript(tr.lines);
+    if(tr.result != ERRCODE_OK) {
+        //TODO
     }
-    cout << "-  END CONTENTS  -" << endl;
 
     return 0;
 }
