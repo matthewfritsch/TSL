@@ -1,10 +1,15 @@
 #ifndef TRANSLATE_HPP
 #define TRANSLATE_HPP
 
-#define ERR_OK             0
-#define ERR_GENERIC_ERROR  1
-#define ERR_SYNTAX_ERROR   2
-#define ERR_FILE_ERROR     3
+#define ERRCODE_OK           0
+#define ERRCODE_GENERIC      1
+#define ERRCODE_SYNTAX       2
+#define ERRCODE_FILERD       3
+
+#define ERRMSG_OK            "OK"
+#define ERRMSG_GENERIC       "Generic Error Encountered"
+#define ERRMSG_SYNTAX        "Syntax Error"
+#define ERRMSG_FILERD        "File could not be read"
 
 #include <iostream>
 #include <fstream>
