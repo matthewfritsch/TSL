@@ -11,22 +11,48 @@
 #define ERRMSG_SYNTAX        "Syntax Error"
 #define ERRMSG_FILERD        "File could not be read"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <map>
 #include <string>
 #include <stack>
 
 using namespace std;
 
+enum VarType {
+    INT,
+    
+};
+
+struct function {
+
+};
+
+struct symbol {
+    string symbolName;
+    
+};
+
 struct TranslationResult {
     int result;
-    string result_msg;
+    string resultMsg;
     vector<string> lines;
 };
 
 struct LineInfo {
     uint32_t lineNumber;
     string lineText;
+};
+
+struct LineParseResult {
+    LineInfo line;
+
+    int errorCode;
+    string errMsg;
+};
+
+enum LineType {
+    VAR_ASSIGNMENT;
 };
 
 TranslationResult readAll(string filename) {
@@ -47,19 +73,77 @@ TranslationResult readAll(string filename) {
     return tr;
 }
 
-TranslationResult buildScript(vector<string> scriptLines){
+void unwrapStack(stack<LineInfo> stackTrace) {
+    if(not stackTrace.size()){
+        return;
+    }
+    LineInfo stackTop = stackTrace.top();
+    stackTrace.pop();
+    unwrapStack(stackTrace, lpr);
+    cerr << " " << "Within body on " << stackTop.lineNumber << endl << "    " << stackTop.lineText << endl;
+}
+
+void writeError(stack<LineInfo> stackTrace, LineParseResult lpr) {
+    cerr << "Encountered error! Producing stack trace:" << endl;
+    unwrapStack(stackTrace);
+    cerr << "ERROR: Line " << lpr.line.lineNumber << ": " << lpr.line.lineText << endl;
+}
+
+LineParseResult parseLine(LineInfo li,
+                          map<string, symbol>& symbols, 
+                          map<string, function>& functions) {
+    LineParseResult lpr;
+    lpr.line = li;
+    
+}
+
+TranslationResult buildScript(vector<string> scriptLines, bool debug){
+    /* REQUIRED
+    -> stack for encapsulation layers
+    -> symbol table for variable definitions
+    -> function table for function definitions
+    -> in-order operator execution
+    */
+
+    //variable creation
+    //variable assignment
+    //if statement
+    //for loop
+    //while loop
+    //function definition
+    //inline conditionals
+    //return values
+    //operators (+ - * / < > << >> ? : & && % ! ** = == () [] | ||)
+    //builtin function
     TranslationResult tr;
     stack<LineInfo> codeStack;
     vector<string> translatedLines;
+
+    map<string, symbol> symbols;
+    map<string, function> functions;
+
     for(unsigned int lineIdx = 0; lineIdx < scriptLines.size(); ++lineIdx){
         LineInfo li;
         li.lineNumber = lineIdx;
         li.lineText = scriptLines[lineIdx];
-        LineParseResult lpr = parseLine(li);
+        LineParseResult lpr = parseLine(li, &symbols, &functions);
         if(lpr.errorCode != ERRCODE_OK){
-            unwrapStack(codeStack);
+            cerr << "Encountered an error:" << endl;
+            writeError(codeStack, lpr);
         }
     }
+
+    cout << "SYMBOLS:" << endl;
+    for(auto it = symbols.begin(); it != symbols.end(); ++it) {
+        cout << it->first << " = " << symbol_str(it->second) << endl;
+    }
+    cout << endl;
+    
+    cout << "FUNCTIONS:" << endl;
+    for(auto it = functions.begin(); it != functions.end(); ++it) {
+        cout << it->first << " = " << func_str(it->second) << endl;
+    } 
+
     return tr;
 }
 
